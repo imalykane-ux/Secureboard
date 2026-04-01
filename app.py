@@ -10,7 +10,7 @@ from functools import wraps
 
 app = Flask(__name__)
 
-# 🔐 SECURE ENV CREDENTIALS
+# 🔐 ENV CREDENTIALS
 USERNAME = os.environ.get("ADMIN_USER", "admin")
 PASSWORD = os.environ.get("ADMIN_PASS")
 
@@ -77,7 +77,7 @@ def requires_auth(f):
 def index():
     ip = request.remote_addr
 
-    # Block repeat attackers
+    # 🚫 BLOCK REPEAT ATTACKERS
     if ip in blocked_ips and blocked_ips[ip] >= 3:
         logging.warning(f"IP BLOCKED: {ip}")
         return "You are temporarily blocked.", 403
@@ -92,7 +92,7 @@ def index():
         if len(content) > 300:
             return "Post is too long.", 400
 
-        # Profanity detection
+        # 🚫 PROFANITY FILTER
         for word in bad_words:
             if word in content.lower():
                 profanity_count[ip] = profanity_count.get(ip, 0) + 1
@@ -103,7 +103,7 @@ def index():
 
                 return "Inappropriate language detected.", 400
 
-        # Attack pattern detection
+        # 🚫 ATTACK PATTERNS
         blocked_patterns = ["<script>", "DROP TABLE", "--", ";--"]
         for pattern in blocked_patterns:
             if pattern.lower() in content.lower():
@@ -111,7 +111,7 @@ def index():
                 logging.warning(f"BLOCKED INPUT from {ip}: {content}")
                 return "Suspicious input detected.", 400
 
-        # Sanitize input
+        # 🔒 SANITIZE INPUT
         content = html.escape(content)
 
         conn = sqlite3.connect(DATABASE)
@@ -131,4 +131,25 @@ def index():
     cursor = conn.cursor()
     cursor.execute("""
         SELECT content, created_at FROM posts
-        WHERE datetime
+        ORDER BY id DESC
+    """)
+    posts = cursor.fetchall()
+    conn.close()
+
+    return render_template("index.html", posts=posts)
+
+
+# 🔐 PROTECTED LOG ROUTE
+@app.route("/logs")
+@requires_auth
+def logs():
+    try:
+        with open("security.log") as f:
+            return "<br>".join(f.readlines())
+    except:
+        return "No logs yet."
+
+
+if __name__ == "__main__":
+    init_db()
+    app.run(host="0.0.0.0", port=5000)
