@@ -1,0 +1,32 @@
+body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    padding: 20px;
+}
+
+h1 {
+    color: #00ffcc;
+}
+
+textarea {
+    width: 400px;
+    height: 120px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: #00ffcc;
+    border: none;
+    cursor: pointer;
+}
+
+.post {
+    background: #222;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}

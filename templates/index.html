@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecureBoard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>SecureBoard</h1>
+
+    <form method="POST">
+        <textarea name="content" placeholder="Write something..." required></textarea>
+        <br>
+        <button type="submit">Post</button>
+    </form>
+
+    <h2>Posts (last hour)</h2>
+
+    {% for post in posts %}
+        <div class="post">
+            <p>{{ post[0] }}</p>
+            <small>{{ post[1] }}</small>
+        </div>
+    {% endfor %}
+
+</body>
+</html>
